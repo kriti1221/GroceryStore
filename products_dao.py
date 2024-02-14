@@ -20,10 +20,12 @@ def get_all_products(connection):
 
 def edit_product(connection, product):
     cursor = connection.cursor()
-    # query = ("UPDATE products SET (name, uom_id, price_per_unit) VALUES (%s, %s, %s) WHERE product_id= product['product_id']")
-    # data = (product['product_name'], product['uom_id'], product['price_per_unit'])
-    query= ("UPDATE products SET name ="+ product['product_name']+"," "uom_id="+str(product['uom_id']) +","+"price_per_unit="+str(product['price_per_unit'])+" WHERE product_id="+str(product[product_id]))
-    cursor.execute(query)
+    query = ("UPDATE products SET"
+            "(name, uom_id, price_per_unit)"
+            "VALUES (%s, %s, %s)"
+            "WHERE product_id="+ str(product['product_id']))
+    data = (product['product_name'], product['uom_id'], product['price_per_unit'])
+    cursor.execute(query, data)
     response = []
     for (product_id, name, uom_id, price_per_unit, uom_name) in cursor:
         response.append({
@@ -64,7 +66,7 @@ if __name__ == '__main__':
     print(edit_product(connection,{
         'product_name': 'potatoes',
         'uom_id': '1',
-        'price_per_unit': 10,
+        'price_per_unit': 0,
         'product_id': 9
     }))
     print(insert_new_product(connection, {
