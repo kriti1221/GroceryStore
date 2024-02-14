@@ -10,7 +10,8 @@ $(function () {
                     '<td>' + product.name + '</td>' +
                     '<td>' + product.uom_name + '</td>' +
                     '<td>' + product.price_per_unit + '</td>' +
-                    '<td><span class="btn btn-xs btn-danger delete-product">Delete</span></td></tr>';
+                    '<td><span class="btn btn-xs btn-danger delete-product">Delete</span></td>' +
+                    '<td><button type="button" class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#editModal">Edit</button></td></tr>';
             });
             $("table").find('tbody').empty().html(table);
         }
