@@ -20,7 +20,6 @@ $(function () {
 
 // Save Product
 $("#saveProduct").on("click", function () {
-    // If we found id value in form then update product detail
     var data = $("#productForm").serializeArray();
     var requestPayload = {
         product_name: null,
@@ -42,6 +41,33 @@ $("#saveProduct").on("click", function () {
         }
     }
     callApi("POST", productSaveApiUrl, {
+        'data': JSON.stringify(requestPayload)
+    });
+});
+
+$("#editProduct").on("click", function () {
+    var data = $("#productForm").serializeArray();
+    var requestPayload = {
+        product_name: null,
+        uom_id: null,
+        price_per_unit: null,
+        product_id: tr.data('id')
+    };
+    for (var i = 0; i < data.length; ++i) {
+        var element = data[i];
+        switch (element.name) {
+            case 'name':
+                requestPayload.product_name = element.value;
+                break;
+            case 'uoms':
+                requestPayload.uom_id = element.value;
+                break;
+            case 'price':
+                requestPayload.price_per_unit = element.value;
+                break;
+        }
+    }
+    callApi("PUT", productEditApiUrl, {
         'data': JSON.stringify(requestPayload)
     });
 });
