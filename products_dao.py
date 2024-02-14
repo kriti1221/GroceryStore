@@ -18,6 +18,26 @@ def get_all_products(connection):
     return response
 
 
+def edit_product(connection, product):
+    cursor = connection.cursor()
+    # query = ("UPDATE products SET (name, uom_id, price_per_unit) VALUES (%s, %s, %s) WHERE product_id= product['product_id']")
+    # data = (product['product_name'], product['uom_id'], product['price_per_unit'])
+    query= ("UPDATE products SET name ="+ product['product_name']+"," "uom_id="+str(product['uom_id']) +","+"price_per_unit="+str(product['price_per_unit'])+" WHERE product_id="+str(product[product_id]))
+    cursor.execute(query)
+    response = []
+    for (product_id, name, uom_id, price_per_unit, uom_name) in cursor:
+        response.append({
+            'product_id': product_id,
+            'name': name,
+            'uom_id': uom_id,
+            'price_per_unit': price_per_unit,
+            'uom_name': uom_name
+        })
+    connection.commit()
+
+    return response
+
+
 def insert_new_product(connection, product):
     cursor = connection.cursor()
     query = ("INSERT INTO products "
@@ -41,6 +61,12 @@ def delete_product(connection, product_id):
 if __name__ == '__main__':
     connection = get_sql_connection()
     print(get_all_products(connection))
+    print(edit_product(connection,{
+        'product_name': 'potatoes',
+        'uom_id': '1',
+        'price_per_unit': 10,
+        'product_id': 9
+    }))
     print(insert_new_product(connection, {
         'product_name': 'potatoes',
         'uom_id': '1',

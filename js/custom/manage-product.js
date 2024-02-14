@@ -10,7 +10,28 @@ $(function () {
                     '<td>' + product.name + '</td>' +
                     '<td>' + product.uom_name + '</td>' +
                     '<td>' + product.price_per_unit + '</td>' +
-                    '<td><span class="btn btn-xs btn-danger delete-product">Delete</span></td></tr>';
+                    '<td><span class="btn btn-xs btn-danger delete-product">Delete</span></td>' +
+                    '<td><button type="button" class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#editModal">Edit</button></td></tr>';
+            });
+            $("table").find('tbody').empty().html(table);
+        }
+    });
+});
+
+var editModal = $("#editModal");
+$(function () {
+
+    //JSON data by API call
+    $.get(productEditApiUrl, function (response) {
+        if (response) {
+            var table = '';
+            $.each(response, function (index, product) {
+                table += '<tr data-id="' + product.product_id + '" data-name="' + product.name + '" data-unit="' + product.uom_id + '" data-price="' + product.price_per_unit + '">' +
+                    '<td>' + product.name + '</td>' +
+                    '<td>' + product.uom_name + '</td>' +
+                    '<td>' + product.price_per_unit + '</td>' +
+                    '<td><span class="btn btn-xs btn-danger delete-product">Delete</span></td>' +
+                    '<td><button type="button" class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#editModal">Edit</button></td></tr>';
             });
             $("table").find('tbody').empty().html(table);
         }
@@ -19,7 +40,6 @@ $(function () {
 
 // Save Product
 $("#saveProduct").on("click", function () {
-    // If we found id value in form then update product detail
     var data = $("#productForm").serializeArray();
     var requestPayload = {
         product_name: null,
@@ -41,6 +61,34 @@ $("#saveProduct").on("click", function () {
         }
     }
     callApi("POST", productSaveApiUrl, {
+        'data': JSON.stringify(requestPayload)
+    });
+});
+
+$("#editProduct").on("click", function () {
+    var tr = $(this).closest('tr');
+    var data = $("#editForm").serializeArray();
+    var requestPayload = {
+        product_name: null,
+        uom_id: null,
+        price_per_unit: null,
+        product_id: tr.data('id')
+    };
+    for (var i = 0; i < data.length; ++i) {
+        var element = data[i];
+        switch (element.name) {
+            case 'name':
+                requestPayload.product_name = element.value;
+                break;
+            case 'uoms':
+                requestPayload.uom_id = element.value;
+                break;
+            case 'price':
+                requestPayload.price_per_unit = element.value;
+                break;
+        }
+    }
+    callApi("POST", productEditApiUrl, {
         'data': JSON.stringify(requestPayload)
     });
 });
@@ -71,6 +119,25 @@ productModal.on('show.bs.modal', function () {
                 options += '<option value="' + uom.uom_id + '">' + uom.uom_name + '</option>';
             });
             $("#uoms").empty().html(options);
+        }
+    });
+});
+
+editModal.on('hide.bs.modal', function () {
+    $("#id").val('0');
+    $("#name, #unit, #price").val('');
+    editModal.find('.modal-title').text('Edit Product');
+});
+
+editModal.on('show.bs.modal', function () {
+    //JSON data by API call
+    $.get(uomListApiUrl, function (response) {
+        if (response) {
+            var options = '<option value="">--Select--</option>';
+            $.each(response, function (index, uom) {
+                options += '<option value="' + uom.uom_id + '">' + uom.uom_name + '</option>';
+            });
+            $("#edituoms").empty().html(options);
         }
     });
 });
