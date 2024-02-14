@@ -35,13 +35,11 @@ def insert_product():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-@app.route('/editProduct', methods=['PUT'])
+@app.route('/editProduct', methods=['POST'])
 def edit_product():
     request_payload = json.loads(request.form['data'])
-    product_id = products_dao.edit_product(connection, request_payload)
-    response = jsonify({
-        'product_id': product_id
-    })
+    response= products_dao.edit_product(connection, request_payload)
+    response = jsonify(response)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 

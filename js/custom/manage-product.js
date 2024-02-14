@@ -18,6 +18,26 @@ $(function () {
     });
 });
 
+var editModal = $("#editModal");
+$(function () {
+
+    //JSON data by API call
+    $.get(productEditApiUrl, function (response) {
+        if (response) {
+            var table = '';
+            $.each(response, function (index, product) {
+                table += '<tr data-id="' + product.product_id + '" data-name="' + product.name + '" data-unit="' + product.uom_id + '" data-price="' + product.price_per_unit + '">' +
+                    '<td>' + product.name + '</td>' +
+                    '<td>' + product.uom_name + '</td>' +
+                    '<td>' + product.price_per_unit + '</td>' +
+                    '<td><span class="btn btn-xs btn-danger delete-product">Delete</span></td>' +
+                    '<td><button type="button" class="btn btn-sm btn-primary pull-right" data-toggle="modal" data-target="#editModal">Edit</button></td></tr>';
+            });
+            $("table").find('tbody').empty().html(table);
+        }
+    });
+});
+
 // Save Product
 $("#saveProduct").on("click", function () {
     var data = $("#productForm").serializeArray();
@@ -46,7 +66,8 @@ $("#saveProduct").on("click", function () {
 });
 
 $("#editProduct").on("click", function () {
-    var data = $("#productForm").serializeArray();
+    var tr = $(this).closest('tr');
+    var data = $("#editForm").serializeArray();
     var requestPayload = {
         product_name: null,
         uom_id: null,
@@ -67,7 +88,7 @@ $("#editProduct").on("click", function () {
                 break;
         }
     }
-    callApi("PUT", productEditApiUrl, {
+    callApi("POST", productEditApiUrl, {
         'data': JSON.stringify(requestPayload)
     });
 });
@@ -98,6 +119,25 @@ productModal.on('show.bs.modal', function () {
                 options += '<option value="' + uom.uom_id + '">' + uom.uom_name + '</option>';
             });
             $("#uoms").empty().html(options);
+        }
+    });
+});
+
+editModal.on('hide.bs.modal', function () {
+    $("#id").val('0');
+    $("#name, #unit, #price").val('');
+    editModal.find('.modal-title').text('Edit Product');
+});
+
+editModal.on('show.bs.modal', function () {
+    //JSON data by API call
+    $.get(uomListApiUrl, function (response) {
+        if (response) {
+            var options = '<option value="">--Select--</option>';
+            $.each(response, function (index, uom) {
+                options += '<option value="' + uom.uom_id + '">' + uom.uom_name + '</option>';
+            });
+            $("#edituoms").empty().html(options);
         }
     });
 });
